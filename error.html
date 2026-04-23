@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block container %}
+<main class="catLayout">
+    <section class="errorPage">
+        <h2>Uh oh!</h2>
+        <p>Unfortunately, it seems that we have encountered an error.</p>
+        <code>{{ error }}</code>
+        <p style="margin-top:20px;">
+            <a class="actionButton" href="{{ url_for('home') }}">&larr; Back to home</a>
+        </p>
+    </section>
+</main>
+{% endblock %}
