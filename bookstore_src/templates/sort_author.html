@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+
+{% block container %}
+<main class="catLayout">
+    <aside id="catLeft">
+        {% for cat in categories %}
+            <p class="notSelectedCategory">
+                <a href="{{ url_for('category', categoryId=cat.categoryId) }}">
+                    {{ cat.categoryName }}
+                </a>
+            </p>
+        {% endfor %}
+    </aside>
+
+    <section id="catRight">
+        <h2 class="catHeading">Works by {{ authorName }}</h2>
+
+        {% if books|length == 0 %}
+            <p class="searchNotice">
+                No volumes by <em>{{ authorName }}</em> in our collection yet.
+            </p>
+        {% else %}
+            <p class="searchNotice">
+                {{ books|length }} volume{{ 's' if books|length != 1 else '' }} by this author.
+            </p>
+
+            <div class="refineBar">
+                <form method="GET" action="{{ url_for('author') }}">
+                    <input type="hidden" name="name" value="{{ authorName }}">
+                    <label for="sortSelect">Sort</label>
+                    <select id="sortSelect" name="sort">
+                        <option value="title-asc"   {% if sortKey == 'title-asc'   %}selected{% endif %}>Title (A &rarr; Z)</option>
+                        <option value="title-desc"  {% if sortKey == 'title-desc'  %}selected{% endif %}>Title (Z &rarr; A)</option>
+                        <option value="price-asc"   {% if sortKey == 'price-asc'   %}selected{% endif %}>Price (low &rarr; high)</option>
+                        <option value="price-desc"  {% if sortKey == 'price-desc'  %}selected{% endif %}>Price (high &rarr; low)</option>
+                    </select>
+                    <button class="refineSubmit" type="submit">Apply</button>
+                </form>
+            </div>
+        {% endif %}
+
+        {% for book in books %}
+        <div class="book">
+            <div>
+                <a href="{{ url_for('book_detail', bookId=book.bookId) }}">
+                    <img
+                        src="{{ url_for('static', filename='images/books/' + book.image) }}"
+                        alt="{{ book.title }}"
+                        onerror="this.onerror=null; this.src='{{ url_for('static', filename='images/misc/placeholder.svg') }}'"
+                    >
+                </a>
+            </div>
+
+            <div class="bookDetailBox">
+                <p class="bookTitle">
+                    <a href="{{ url_for('book_detail', bookId=book.bookId) }}">
+                        {{ book.title }}
+                    </a>
+                </p>
+                <p class="bookDetail">Category: {{ book.categoryName }}</p>
+                <p class="bookDetail">ISBN: {{ book.isbn }}</p>
+                <p class="bookPrice">${{ '%.2f'|format(book.price) }}</p>
+
+                {% if book.readNow == 1 %}
+                    <a class="readNowBadge" href="{{ url_for('read_now') }}">Read Now</a>
+                {% endif %}
+
+                <div>
+                    <a class="actionButton" href="#">Add to cart</a>
+                    <a class="actionButton secondary" href="{{ url_for('book_detail', bookId=book.bookId) }}">View details</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </section>
+</main>
+{% endblock %}
